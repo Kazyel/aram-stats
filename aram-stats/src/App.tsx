@@ -1,12 +1,8 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import PlayerName from "./components/Player/PlayerName";
 import PlayerIcon from "./components/Player/PlayerIcon";
 import SummonerLevel from "./components/Player/SummonerLevel";
-
-type RiotData = {
-    riotName: FormDataEntryValue;
-    riotTag: FormDataEntryValue;
-};
+import { riotFetch } from "./services/riotFetch";
 
 function App() {
     const [playerName, setPlayerName] = useState<string>("");
@@ -16,27 +12,20 @@ function App() {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const fetchPlayer = async ({ riotName, riotTag }: RiotData) => {
+    const fetchPlayer = async (e: FormEvent<HTMLFormElement>) => {
         setIsLoading(true);
 
-        const res = await fetch(
-            `http://127.0.0.1:3000/summoner?name=${riotName}&tag=${riotTag}`,
-            {
-                method: "GET",
-                mode: "cors",
-            }
-        );
-
-        const playerStats = await res.json();
-
-        setRiotTag(riotTag.toString());
-        setPlayerName(playerStats.playerName);
-        setPlayerIcon(
-            `https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/${playerStats.profileIcon}.png`
-        );
-        setSummonerLevel(playerStats.summonerLevel);
-
-        if (res.ok) {
+        try {
+            const res = await riotFetch(e);
+            setPlayerName(res.playerName);
+            setPlayerIcon(
+                `https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/${res.profileIcon}.png`
+            );
+            setSummonerLevel(res.summonerLevel);
+            setRiotTag(res.riotTag);
+        } catch (err) {
+            console.warn("Not enough context provided.");
+        } finally {
             setIsLoading(false);
         }
     };
@@ -48,13 +37,7 @@ function App() {
                     className="flex flex-col p-12 justify-center items-center"
                     onSubmit={(e) => {
                         e.preventDefault();
-                        const formData = new FormData(e.currentTarget);
-                        const riotData = {
-                            riotName: formData.get("playerName") ?? "",
-                            riotTag: formData.get("playerTag") ?? "",
-                        };
-
-                        fetchPlayer(riotData);
+                        fetchPlayer(e);
                     }}
                 >
                     <div className="flex flex-col">

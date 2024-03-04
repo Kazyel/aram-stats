@@ -24,13 +24,20 @@ const fetchSummoner = async (name, tag) => {
 };
 
 router.get("/", async (req, res) => {
-    const summonerRes = await fetchSummoner(req.query.name, req.query.tag);
+    if (req.query.name && req.query.tag) {
+        const summonerRes = await fetchSummoner(req.query.name, req.query.tag);
 
-    res.status(200).json({
-        playerName: summonerRes.name,
-        summonerLevel: summonerRes.summonerLevel,
-        profileIcon: summonerRes.profileIconId,
-    });
+        res.status(200).json({
+            playerName: summonerRes.name,
+            riotTag: req.query.tag,
+            summonerLevel: summonerRes.summonerLevel,
+            profileIcon: summonerRes.profileIconId,
+        });
+    } else {
+        res.status(400).send(
+            "Can't fetch with unknown entries. Please provide both of them!"
+        );
+    }
 });
 
 module.exports = router;
