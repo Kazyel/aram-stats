@@ -16,13 +16,15 @@ function App() {
         setIsLoading(true);
 
         try {
-            const res = await riotFetch(e);
-            setPlayerName(res.playerName);
+            const { playerName, riotTag, profileIcon, summonerLevel } =
+                await riotFetch(e);
+
+            setPlayerName(playerName);
             setPlayerIcon(
-                `https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/${res.profileIcon}.png`
+                `https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/${profileIcon}.png`
             );
-            setSummonerLevel(res.summonerLevel);
-            setRiotTag(res.riotTag);
+            setSummonerLevel(summonerLevel);
+            setRiotTag(riotTag);
         } catch (err) {
             console.warn("Not enough context provided.");
         } finally {

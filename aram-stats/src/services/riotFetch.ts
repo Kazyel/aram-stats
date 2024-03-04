@@ -1,6 +1,15 @@
 import { FormEvent } from "react";
 
-export const riotFetch = async (e: FormEvent<HTMLFormElement>) => {
+type RiotJson = {
+    playerName: string;
+    riotTag: string;
+    summonerLevel: string;
+    profileIcon: string;
+};
+
+export const riotFetch = async (
+    e: FormEvent<HTMLFormElement>
+): Promise<RiotJson> => {
     const formData = new FormData(e.currentTarget);
     const riotName = formData.get("playerName")?.toString() ?? "";
     const riotTag = formData.get("playerTag")?.toString() ?? "";
